@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#040812" />
+    <meta name="description" content="A living, interactive 3D gravity playground. Explore our solar system, the three-body problem, and what happens when you change the universe." />
+    <title>Orbit Lab — Orbital Simulation Engine</title>
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="css/style.css?v=1.1.0" />
+  </head>
+  <body>
+    <canvas id="cosmos" aria-label="Interactive three-dimensional gravity simulation. Drag to orbit, scroll to zoom, and click a celestial body to inspect it."></canvas>
+    <div class="canvas-vignette" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="wordmark" href="./" aria-label="Orbit Lab home">
+        <svg class="brand-symbol" viewBox="0 0 38 38" fill="none" aria-hidden="true"><circle cx="19" cy="19" r="6" fill="currentColor"/><ellipse cx="19" cy="19" rx="19" ry="8" transform="rotate(-38 19 19)" stroke="currentColor" stroke-width="1.1"/><path d="M7.2 26.9a17.9 17.9 0 0 0 6.3 5.2" stroke="currentColor" stroke-width="1.1"/></svg>
+        <span>ORBIT<span class="wordmark-divider">/</span><span class="wordmark-lab">LAB</span></span>
+      </a>
+      <span class="nav-label">MISSION CONTROL <span>/</span> N-BODY ENGINE</span>
+      <div class="nav-actions">
+        <span class="sandbox-tag"><span class="live-dot"></span>ENGINE ONLINE</span>
+        <button class="help-button" id="help-button" type="button" aria-label="Open controls and simulation information"><span aria-hidden="true">?</span><span class="help-label">Flight manual</span></button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="intro-panel" aria-labelledby="headline">
+        <div class="eyebrow"><span class="eyebrow-line"></span>ORBITAL SIMULATION // ONLINE</div>
+        <h1 id="headline">Rewrite the<br /><em>cosmic order.</em></h1>
+        <p class="intro-copy">Alter the system. Disrupt an orbit.<br />Observe the consequences in real time.</p>
+
+        <details class="scenario-details" open>
+          <summary class="section-label">SELECT SIMULATION <span class="scenario-total">// 05</span><span class="summary-chevron" aria-hidden="true">⌄</span></summary>
+          <div class="scenario-list" role="group" aria-label="Simulation models">
+            <button type="button" class="scenario-card active" data-preset="solar" aria-pressed="true">
+              <span class="scenario-icon solar-icon" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="4" fill="currentColor"/><ellipse cx="18" cy="18" rx="14" ry="7" transform="rotate(-28 18 18)" stroke="currentColor" stroke-width=".8"/><circle cx="28" cy="11" r="2" fill="currentColor"/><ellipse cx="18" cy="18" rx="10" ry="13" transform="rotate(28 18 18)" stroke="currentColor" stroke-width=".6" opacity=".4"/></svg></span>
+              <span class="scenario-text"><strong>Solar System</strong><span>Our corner of the cosmos</span></span><span class="scenario-index">01</span>
+            </button>
+            <button type="button" class="scenario-card" data-preset="three-body" aria-pressed="false">
+              <span class="scenario-icon" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><path d="M12 9c15-9 23 14 10 19S1 14 12 9Z" stroke="currentColor" stroke-width=".8" opacity=".5"/><circle cx="12" cy="9" r="3.7" fill="currentColor"/><circle cx="27" cy="20" r="3" fill="currentColor"/><circle cx="9" cy="25" r="2.4" fill="currentColor"/></svg></span>
+              <span class="scenario-text"><strong>Three-Body <span class="cn-title">三体</span></strong><span>Three suns. Beautiful chaos.</span></span><span class="scenario-index">02</span>
+            </button>
+            <button type="button" class="scenario-card" data-preset="figure-eight" aria-pressed="false">
+              <span class="scenario-icon" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><path d="M18 18C1-2-5 38 18 18S41 38 18 18Z" stroke="currentColor" stroke-width="1"/><circle cx="7" cy="14" r="2.7" fill="currentColor"/><circle cx="29" cy="22" r="2.7" fill="currentColor"/><circle cx="18" cy="18" r="2.7" fill="currentColor"/></svg></span>
+              <span class="scenario-text"><strong>Figure Eight</strong><span>An unlikely cosmic dance</span></span><span class="scenario-index">03</span>
+            </button>
+            <button type="button" class="scenario-card" data-preset="black-hole" aria-pressed="false">
+              <span class="scenario-icon" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="18" rx="15" ry="5" transform="rotate(-28 18 18)" stroke="currentColor"/><circle cx="18" cy="18" r="7" fill="#0c0e12" stroke="currentColor" stroke-width="1.5"/><path d="M3.8 23.2c3.4 2.7 10 .7 16.7-2.8 6.3-3.3 10-6.5 10-8.5" stroke="currentColor" stroke-width="1.2"/></svg></span>
+              <span class="scenario-text"><strong>Black Hole</strong><span>Meet the point of no return</span></span><span class="scenario-index">04</span>
+            </button>
+            <button type="button" class="scenario-card" data-preset="binary" aria-pressed="false">
+              <span class="scenario-icon" aria-hidden="true"><svg viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="18" rx="16" ry="8" transform="rotate(-28 18 18)" stroke="currentColor" stroke-width=".8" opacity=".5"/><circle cx="11" cy="21" r="5" fill="currentColor"/><circle cx="25" cy="14" r="4" fill="currentColor"/></svg></span>
+              <span class="scenario-text"><strong>Binary Stars</strong><span>Two stars, one shared orbit</span></span><span class="scenario-index">05</span>
+            </button>
+          </div>
+        </details>
+        <p class="model-note"><span aria-hidden="true">✦</span> NEWTONIAN DYNAMICS // UNLIMITED OUTCOMES</p>
+      </section>
+
+      <div class="scene-coordinate" aria-hidden="true"><span class="coordinate-cross">+</span><span>N-BODY ENGINE // LIVE</span><span class="coordinate-line"></span></div>
+
+      <div class="scene-toolbar" role="group" aria-label="Camera controls">
+        <button id="zoom-out-button" class="camera-zoom" type="button" aria-label="Zoom out" title="Zoom out (−)"><span aria-hidden="true">−</span></button>
+        <button id="zoom-in-button" class="camera-zoom" type="button" aria-label="Zoom in" title="Zoom in (+)"><span aria-hidden="true">+</span></button>
+        <span class="camera-divider" aria-hidden="true"></span>
+        <button id="closeup-button" class="camera-closeup" type="button" aria-label="Close up selected object" title="Close up selected object"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="3" stroke="currentColor"/><path d="M5 1.5H1.5V5M11 1.5h3.5V5M1.5 11v3.5H5M14.5 11v3.5H11" stroke="currentColor" stroke-linecap="round"/></svg><span>Close up</span></button>
+        <span class="zoom-telemetry"><span>VIEW RANGE</span><output id="zoom-value" aria-label="Camera view range">14.0 AU</output></span>
+        <span class="viewer-hint">SCROLL TO ZOOM <span aria-hidden="true">⌄</span></span>
+        <span class="viewer-hint viewer-hint-touch">PINCH TO ZOOM</span>
+      </div>
+
+      <aside class="inspector-panel" aria-label="Celestial body controls">
+        <details class="inspector-details" open>
+          <summary class="inspector-header"><span class="section-label">OBJECT INSPECTOR</span><span class="inspector-indicator" aria-hidden="true"><span></span>LIVE</span><span class="summary-chevron" aria-hidden="true">⌄</span></summary>
+          <div class="inspector-content">
+            <div class="body-heading"><div><span id="body-type" class="body-type">G-TYPE MAIN-SEQUENCE STAR</span><h2 id="body-name">Sun</h2></div><span class="body-orb" aria-hidden="true"></span></div>
+            <p id="body-description" class="body-description">The star that holds our solar system together. Change its mass and watch every orbit respond.</p>
+            <label class="select-label" for="body-select">SELECT AN OBJECT</label>
+            <div class="select-wrap"><select id="body-select" aria-label="Select a celestial body"><option value="sun">Sun</option></select><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></div>
+
+            <div class="control-section">
+              <div class="control-label-row"><label for="mass-value">Mass</label><div class="value-input"><input id="mass-value" type="number" min="0.0000001" max="1000" step="any" value="1" aria-label="Mass in solar masses" /><span>M☉</span></div></div>
+              <input type="range" id="mass-slider" min="-7" max="3" step="0.01" value="0" aria-label="Mass on a logarithmic scale" />
+              <div class="range-endpoints"><span>LIGHTER</span><span>HEAVIER</span></div>
+            </div>
+
+            <div class="control-section position-section">
+              <div class="control-label-row"><span>Position</span><span class="unit-label">AU</span></div>
+              <div class="axis-row"><label for="pos-x" class="axis-x">X</label><input type="range" id="pos-x" min="-30" max="30" step="0.01" value="0" /><output id="pos-x-value" for="pos-x">0.00</output></div>
+              <div class="axis-row"><label for="pos-y" class="axis-y">Y</label><input type="range" id="pos-y" min="-30" max="30" step="0.01" value="0" /><output id="pos-y-value" for="pos-y">0.00</output></div>
+              <div class="axis-row"><label for="pos-z" class="axis-z">Z</label><input type="range" id="pos-z" min="-30" max="30" step="0.01" value="0" /><output id="pos-z-value" for="pos-z">0.00</output></div>
+              <output id="position-output" class="visually-hidden" for="pos-x pos-y pos-z">0, 0, 0 AU</output>
+              <p class="control-hint">Slide an axis to disturb the balance.</p>
+            </div>
+            <div class="nudge-controls">
+              <div class="control-label-row"><label for="nudge-direction">Velocity</label><span class="velocity-readout"><output id="velocity-value">0.0 km/s</output></span></div>
+              <div class="select-wrap"><select id="nudge-direction" aria-label="Direction of velocity change"><option value="prograde">Along orbit</option><option value="retrograde">Slow down</option><option value="outward">Away from center</option><option value="upward">Out of plane</option></select><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m3 4.5 3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></div>
+              <div class="nudge-strength-row"><label class="visually-hidden" for="nudge-strength">Nudge strength as a percentage of speed</label><input type="range" id="nudge-strength" min="1" max="100" step="1" value="15" /><output id="nudge-value" for="nudge-strength">+15% speed</output></div>
+            </div>
+            <button type="button" class="nudge-button" id="nudge-button"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="m3 13 9-9M6 4h6v6M3 6l2-2M12 15l3-3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>Give a nudge<span>↗</span></button>
+            <div class="object-actions"><button type="button" id="focus-button"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="4" stroke="currentColor"/><path d="M8 1v3m0 8v3M1 8h3m8 0h3" stroke="currentColor"/></svg>Follow object</button><button type="button" id="reset-button">Reset model</button><button type="button" class="remove-body-button" id="remove-body-button" aria-label="Remove selected object"><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 4.5h10M6 4.5V2.8h4v1.7M4 4.5l.7 9h6.6l.7-9M6.5 7v4M9.5 7v4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>Remove object</button></div>
+
+            <div class="blackhole-section">
+              <div class="blackhole-heading"><span class="section-label">SINGULARITY INJECTION</span><span aria-hidden="true">↙</span></div>
+              <div class="blackhole-action"><button id="blackhole-button" type="button"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><ellipse cx="10" cy="10" rx="9" ry="3" transform="rotate(-25 10 10)" stroke="currentColor"/><circle cx="10" cy="10" r="4.3" fill="#111015" stroke="currentColor"/></svg>Drop a black hole</button><label class="visually-hidden" for="blackhole-mass">Black hole mass</label><select id="blackhole-mass" aria-label="Black hole mass in solar masses"><option value="1">1 M☉</option><option value="5" selected>5 M☉</option><option value="20">20 M☉</option></select></div>
+            </div>
+          </div>
+        </details>
+      </aside>
+
+      <div class="scene-caption"><span class="caption-line"></span><div><span class="section-label" id="model-name">Solar System</span><p id="model-caption">One star. Eight worlds. A delicate balance.</p><span class="model-stats"><span id="body-count">9</span> BODIES <span class="stats-separator">/</span> ENERGY DRIFT <span id="energy-value">0.000%</span></span></div></div>
+
+      <details id="body-tray" class="body-tray" aria-label="Planet builder" open>
+        <summary><span>PLANET BUILDER</span><span class="tray-toggle" aria-hidden="true">+</span></summary>
+        <div class="body-tray-content">
+          <div class="planet-palette" role="group" aria-label="Planets to add">
+            <button type="button" data-add-planet="earth" draggable="true" aria-label="Add Earth-like planet"><img data-texture="earth" src="assets/favicon.svg" draggable="false" alt="" /><span>Earth</span><span class="planet-add" aria-hidden="true">+</span></button>
+            <button type="button" data-add-planet="mars" draggable="true" aria-label="Add Mars-like planet"><img data-texture="mars" src="assets/favicon.svg" draggable="false" alt="" /><span>Mars</span><span class="planet-add" aria-hidden="true">+</span></button>
+            <button type="button" data-add-planet="jupiter" draggable="true" aria-label="Add Jupiter-like planet"><img data-texture="jupiter" src="assets/favicon.svg" draggable="false" alt="" /><span>Jupiter</span><span class="planet-add" aria-hidden="true">+</span></button>
+            <button type="button" data-add-planet="neptune" draggable="true" aria-label="Add Neptune-like planet"><img data-texture="neptune" src="assets/favicon.svg" draggable="false" alt="" /><span>Neptune</span><span class="planet-add" aria-hidden="true">+</span></button>
+          </div>
+          <p>CLICK TO ADD <span>·</span> DRAG INTO SPACE</p>
+        </div>
+      </details>
+    </main>
+
+    <div id="delete-zone" class="delete-zone" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4.5h10M6 4.5V2.8h4v1.7M4 4.5l.7 9h6.6l.7-9M6.5 7v4M9.5 7v4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg><span>DROP TO REMOVE</span></div>
+
+    <footer class="bottom-area">
+      <div class="scene-meta"><span class="interaction-hint"><svg viewBox="0 0 14 17" fill="none" aria-hidden="true"><rect x="2.5" y="1" width="9" height="14" rx="4.5" stroke="currentColor"/><path d="M7 1v5" stroke="currentColor"/></svg>Drag to orbit<span>·</span>Scroll to zoom<span>·</span>Click to inspect</span><span id="status" class="status" role="status" aria-live="polite">Explore a universe of your own.</span></div>
+      <div class="transport-bar">
+        <div class="playback-controls"><button id="pause-button" class="pause-button" type="button" aria-label="Pause simulation" title="Pause / play (Space)"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="4" y="3.5" width="2.5" height="9" rx=".6"/><rect x="9.5" y="3.5" width="2.5" height="9" rx=".6"/></svg><span>Pause</span></button><button id="restart-button" class="icon-button" type="button" aria-label="Restart the simulation" title="Restart (R)"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M4.1 6.3A5.8 5.8 0 1 1 3.3 10M4 2.8v4.1h4.1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        <div class="transport-divider"></div>
+        <div class="speed-control"><div class="speed-label"><label for="speed-slider">TIME SPEED</label><output id="speed-value" for="speed-slider">30 days / sec</output></div><input type="range" id="speed-slider" min="1" max="180" step="1" value="30" aria-label="Simulation speed in days per second" /></div>
+        <div class="elapsed-control"><span class="section-label">ELAPSED TIME</span><span id="time-value">0.0 years</span></div>
+        <div class="transport-divider view-divider"></div>
+        <div class="view-controls"><label class="toggle-control"><input id="trails-toggle" type="checkbox" checked /><span class="custom-check" aria-hidden="true"></span>Trails</label><label class="toggle-control"><input id="labels-toggle" type="checkbox" checked /><span class="custom-check" aria-hidden="true"></span>Labels</label><label class="toggle-control"><input id="vectors-toggle" type="checkbox" /><span class="custom-check" aria-hidden="true"></span>Velocity</label></div>
+        <div class="render-controls"><label class="visually-hidden" for="quality-select">Graphics quality</label><select id="quality-select" aria-label="Graphics quality"><option value="auto">Auto quality</option><option value="high">High quality</option><option value="performance">Performance</option></select><span class="fps-indicator"><span></span><span id="fps-value">Measuring…</span></span><button id="fit-button" class="icon-button fit-button" type="button" aria-label="Fit the universe in view" title="Fit all objects in view"><svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M6.5 3H3v3.5M11.5 3H15v3.5M3 11.5V15h3.5M15 11.5V15h-3.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg><span class="fit-label">Fit system</span></button></div>
+      </div>
+      <div class="footer-credit"><span>ORBITAL RESEARCH DIVISION</span><span>N-BODY DYNAMICS // VISUAL SCALE ENHANCED</span><span>ORBIT LAB <span class="footer-star" aria-hidden="true">✧</span> 001</span></div>
+    </footer>
+
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <form method="dialog"><button class="dialog-close icon-button" aria-label="Close help" value="close">×</button></form>
+      <span class="eyebrow">OPERATOR BRIEFING // ORBIT LAB</span>
+      <h2 id="help-title">Your universe.<br />Your command.</h2>
+      <p>Choose a model, click any world, and change its mass or position. Give it a nudge, follow its journey, or place a black hole at the center and watch the system react.</p>
+      <div class="help-shortcuts"><div><span>Orbit the scene</span><kbd>Drag empty space</kbd></div><div><span>Move a body</span><kbd>Drag the body</kbd></div><div><span>Add a planet</span><kbd>Click / drag from tray</kbd></div><div><span>Remove selected object</span><kbd>Delete</kbd></div><div><span>Follow an object or its label</span><kbd>Double-click</kbd></div><div><span>Zoom in or out</span><kbd>Scroll / pinch / + / −</kbd></div><div><span>Pause / resume</span><kbd>Space</kbd></div><div><span>Restart the model</span><kbd>R</kbd></div><div><span>Follow the selected object</span><kbd>F</kbd></div><div><span>Close this guide</span><kbd>Esc</kbd></div></div>
+      <p class="help-science">A playground grounded in Newtonian gravity. Planet sizes are exaggerated so you can see them, and initial orbits are simplified. Black-hole accretion disks are illustrative; this is not a general-relativity simulation. Graphics adapt to your device with a target of 60 frames per second.</p>
+      <form method="dialog"><button class="dialog-primary" value="close">Initialize exploration<span>↗</span></button></form>
+    </dialog>
+    <script type="module" src="js/app.js?v=1.1.0"></script>
+  </body>
+</html>
