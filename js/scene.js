@@ -1,4 +1,4 @@
-import {TEXTURES} from '../assets/textures.js';
+import {TEXTURES,loadTexture,onTextureReady} from '../assets/textures.js?v=1.1.2';
 import * as THREE from '../vendor/three.module.min.js';
 
 const TAU = Math.PI * 2;
@@ -50,10 +50,9 @@ export class OrbitScene {
     this.scene.add(new THREE.AmbientLight(0x9fb6e2,.24));
     this.content=new THREE.Group();this.scene.add(this.content);
     this.entries=new Map();this.textures=new Map();this.glow=glowTexture();
-    this.cloudTextureReady=false;
-    this.cloudTexture=new THREE.TextureLoader().load(TEXTURES['earth-clouds'],()=>{
-      this.cloudTextureReady=true;for(const e of this.entries.values())if(e.group.userData.clouds)e.group.userData.clouds.visible=true;
-    },undefined,()=>{});
+    this.cloudTexture=null;this.cloudTextureReady=false;
+    this.textureLoads=new Set();this.resolvedTextures=new Set();
+    this.textureReadyUnsubscribe=onTextureReady((kind,dataURL)=>this.upgradeTexture(kind,dataURL));
     this.sphere=new THREE.SphereGeometry(1,64,40);
     this.target=new THREE.Vector3();this.desiredTarget=new THREE.Vector3();
     this.distance=11;this.desiredDistance=11;this.theta=.45;this.phi=.77;
@@ -93,20 +92,37 @@ export class OrbitScene {
   }
 
   getTexture(kind,color) {
-    if(this.textures.has(kind))return this.textures.get(kind);
-    const fallback=proceduralTexture(kind,color);this.textures.set(kind,fallback);
-    if(TEXTURES[kind]) {
-      new THREE.TextureLoader().load(TEXTURES[kind],t=>{
-        t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=Math.min(8,this.renderer.capabilities.getMaxAnisotropy());
-        const previous=this.textures.get(kind);this.textures.set(kind,t);
-        for(const e of this.entries.values())if(e.textureKind===kind){
-          if(e.mesh.material.map){e.mesh.material.map=t;e.mesh.material.color.set(0xffffff);e.mesh.material.needsUpdate=true;}
-          if(e.mesh.material.uniforms?.surface)e.mesh.material.uniforms.surface.value=t;
+    if(!this.textures.has(kind))this.textures.set(kind,proceduralTexture(kind,color));
+    if(TEXTURES[kind])this.upgradeTexture(kind,TEXTURES[kind]);
+    else loadTexture(kind).catch(()=>{});
+    return this.textures.get(kind);
+  }
+
+  upgradeTexture(kind,dataURL) {
+    if(!dataURL)return;
+    if(kind==='earth-clouds') {
+      if(this.cloudTexture)return;
+      this.cloudTexture=new THREE.TextureLoader().load(dataURL,t=>{
+        this.cloudTexture=t;this.cloudTextureReady=true;
+        for(const e of this.entries.values())if(e.group.userData.clouds){
+          const clouds=e.group.userData.clouds;
+          clouds.material.alphaMap=t;clouds.material.needsUpdate=true;clouds.visible=true;
         }
-        previous?.dispose();
-      },undefined,()=>{});
+      },undefined,()=>{this.cloudTexture?.dispose();this.cloudTexture=null;this.cloudTextureReady=false;});
+      return;
     }
-    return fallback;
+    if(!this.textures.has(kind)||this.resolvedTextures.has(kind)||this.textureLoads.has(kind))return;
+    this.textureLoads.add(kind);
+    new THREE.TextureLoader().load(dataURL,t=>{
+      t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=Math.min(8,this.renderer.capabilities.getMaxAnisotropy());
+      const previous=this.textures.get(kind);this.textures.set(kind,t);
+      this.resolvedTextures.add(kind);this.textureLoads.delete(kind);
+      for(const e of this.entries.values())if(e.textureKind===kind){
+        if(e.mesh.material.map){e.mesh.material.map=t;e.mesh.material.color.set(0xffffff);e.mesh.material.needsUpdate=true;}
+        if(e.mesh.material.uniforms?.surface)e.mesh.material.uniforms.surface.value=t;
+      }
+      if(previous&&previous!==t)previous.dispose();
+    },undefined,()=>{this.textureLoads.delete(kind);});
   }
 
   createBody(body) {
@@ -147,6 +163,8 @@ export class OrbitScene {
       if(body.texture==='earth'){
         const cloudsMaterial=new THREE.MeshPhongMaterial({color:0xffffff,alphaMap:this.cloudTexture,transparent:true,opacity:.8,depthWrite:false});
         const clouds=new THREE.Mesh(this.sphere,cloudsMaterial);clouds.scale.setScalar(radius*1.012);clouds.visible=this.cloudTextureReady;group.add(clouds);group.userData.clouds=clouds;
+        if(TEXTURES['earth-clouds'])this.upgradeTexture('earth-clouds',TEXTURES['earth-clouds']);
+        else loadTexture('earth-clouds').catch(()=>{});
       }
       if(body.texture==='saturn') {
         const ringGeo=new THREE.RingGeometry(1.35,2.4,128,1);
@@ -160,7 +178,7 @@ export class OrbitScene {
     const positions=new Float32Array(MAX_TRAIL*3),trailGeo=new THREE.BufferGeometry();trailGeo.setAttribute('position',new THREE.BufferAttribute(positions,3));trailGeo.setDrawRange(0,0);
     const trail=new THREE.Line(trailGeo,new THREE.LineBasicMaterial({color,transparent:true,opacity:.48}));trail.frustumCulled=false;this.scene.add(trail);
     const arrow=new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(),1,color,.09,.04);this.scene.add(arrow);arrow.visible=false;
-    const entry={id:body.id,type,textureKind:body.texture,group,mesh,label,light,glow,radius,baseRadius:radius,trail,positions,trailCount:0,lastTrail:new THREE.Vector3(Infinity,0,0),arrow};
+    const entry={id:body.id,type,textureKind:type==='star'?'sun':body.texture,group,mesh,label,light,glow,radius,baseRadius:radius,trail,positions,trailCount:0,lastTrail:new THREE.Vector3(Infinity,0,0),arrow};
     this.entries.set(body.id,entry);return entry;
   }
 
