@@ -4,7 +4,7 @@ An interactive 3D gravity sandbox for exploring what happens when you add, move,
 
 The app runs entirely in your browser with Three.js, local planet textures, and a numerical N-body simulation. No build step, account, or runtime CDN is required.
 
-This portable edition stores its ten planet textures as base64 JavaScript modules in `assets/`; the browser reconstructs the original image bytes locally. Every source file is UTF-8 text so the complete app can be published through a code editor. All graphics, libraries, and simulation code are local; only the optional Google Fonts stylesheet uses a remote service, with system-font fallbacks.
+This portable edition stores its ten planet textures as base64 JavaScript modules in `assets/`; the browser reconstructs the original image bytes locally. The simulation starts with procedural surfaces, then upgrades each planet as its detailed texture arrives. Slow texture downloads do not block the controls or gravity engine. Every source file is UTF-8 text so the complete app can be published through a code editor. All graphics, libraries, and simulation code are local; only the optional Google Fonts stylesheet uses a remote service, with system-font fallbacks.
 
 
 ## Run locally
