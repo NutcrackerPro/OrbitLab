@@ -1,9 +1,14 @@
-import {TEXTURES} from '../assets/textures.js';
+import {TEXTURES,loadTexture,onTextureReady} from '../assets/textures.js?v=1.1.2';
 import {GravitySimulation,G} from './physics.js?v=1.1.0';
 import {PRESETS} from './presets.js?v=1.1.0';
-import {OrbitScene} from './scene.js?v=1.1.1';
+import {OrbitScene} from './scene.js?v=1.1.2';
 
-for(const image of document.querySelectorAll('img[data-texture]')){const texture=TEXTURES[image.dataset.texture];if(texture)image.src=texture;}
+onTextureReady((kind,url)=>{
+  for(const image of document.querySelectorAll('img[data-texture]'))if(image.dataset.texture===kind)image.src=url;
+  const body=currentBody();
+  if(body?.type!=='blackhole'&&body?.texture===kind){const orb=document.querySelector('.body-orb');if(orb)orb.style.backgroundImage=`url("${url}")`;}
+});
+for(const kind of ['earth','mars','jupiter','neptune'])loadTexture(kind).catch(()=>{});
 
 const $=id=>document.getElementById(id);
 const sim=new GravitySimulation();
@@ -82,7 +87,7 @@ function selectBody(id) {
   $('body-name').textContent=body.name;$('body-type').textContent=body.type==='blackhole'?'SINGULARITY':body.type==='star'?'STAR':'PLANET';
   $('body-description').textContent=body.description||'Change its position or momentum and watch gravity respond.';
   const orb=document.querySelector('.body-orb');
-  if(orb){orb.style.backgroundImage=body.type==='blackhole'?'radial-gradient(circle,#000 40%,#efc082 50%,#553222 62%,#0b0c10 70%)':`url("${TEXTURES[body.texture]||TEXTURES.earth}")`;orb.style.backgroundSize='cover';}
+  if(orb){orb.style.backgroundImage=body.type==='blackhole'?'radial-gradient(circle,#000 40%,#efc082 50%,#553222 62%,#0b0c10 70%)':TEXTURES[body.texture]?`url("${TEXTURES[body.texture]}")`:`radial-gradient(circle at 30% 25%,#fff8,${body.color||'#72b8ec'} 40%,#091221 85%)`;orb.style.backgroundSize='cover';}
   $('mass-value').value=String(Number(body.mass.toPrecision(5)));$('mass-slider').value=Math.log10(body.mass);
   const limit=Math.max(3,Math.ceil(Math.max(...sim.bodies.flatMap(b=>Object.values(b.position).map(Math.abs))))*1.3,preset.scale||3);
   for(const axis of ['x','y','z']){const input=$('pos-'+axis);input.min=-limit;input.max=limit;input.step=.001;}
@@ -234,7 +239,11 @@ try {
   loadPreset(location.hash.slice(1)||'solar',{announce:false});
   requestAnimationFrame(frame);
   document.body.classList.add('is-ready');
+  $('startup-message')?.remove();
+  if($('engine-state'))$('engine-state').textContent='ENGINE ONLINE';
 } catch(error) {
+  $('startup-message')?.remove();
+  if($('engine-state'))$('engine-state').textContent='ENGINE OFFLINE';
   console.error(error);$('status').textContent='WebGL 2 is unavailable. Enable hardware acceleration or use a recent browser.';
   const fallback=document.createElement('div');fallback.className='webgl-error';fallback.innerHTML='<h2>A little more graphics power.</h2><p>OrbitLab needs WebGL 2. Enable hardware acceleration in your browser, then reload.</p>';document.body.append(fallback);
 }
