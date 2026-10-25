@@ -12,6 +12,7 @@
   <body>
     <canvas id="cosmos" aria-label="Interactive three-dimensional gravity simulation. Drag to orbit, scroll to zoom, and click a celestial body to inspect it."></canvas>
     <div class="canvas-vignette" aria-hidden="true"></div>
+    <div id="startup-message" role="status" style="position:fixed;z-index:4;left:50%;top:42%;transform:translate(-50%,-50%);padding:18px 22px;border:1px solid #59e1ff55;background:#091625ee;color:#bdefff;font:12px/1.6 monospace;text-align:center;max-width:280px;pointer-events:none">Initializing gravity engine…<br /><small>Preparing your universe</small></div>
 
     <header class="topbar">
       <a class="wordmark" href="./" aria-label="Orbit Lab home">
@@ -20,7 +21,7 @@
       </a>
       <span class="nav-label">MISSION CONTROL <span>/</span> N-BODY ENGINE</span>
       <div class="nav-actions">
-        <span class="sandbox-tag"><span class="live-dot"></span>ENGINE ONLINE</span>
+        <span class="sandbox-tag"><span class="live-dot"></span><span id="engine-state">ENGINE INITIALIZING</span></span>
         <button class="help-button" id="help-button" type="button" aria-label="Open controls and simulation information"><span aria-hidden="true">?</span><span class="help-label">Flight manual</span></button>
       </div>
     </header>
@@ -151,6 +152,12 @@
       <p class="help-science">A playground grounded in Newtonian gravity. Planet sizes are exaggerated so you can see them, and initial orbits are simplified. Black-hole accretion disks are illustrative; this is not a general-relativity simulation. Graphics adapt to your device with a target of 60 frames per second.</p>
       <form method="dialog"><button class="dialog-primary" value="close">Initialize exploration<span>↗</span></button></form>
     </dialog>
-    <script type="module" src="js/app.js?v=1.1.0"></script>
+    <script type="module">
+      import('./js/app.js?v=1.1.2').catch(error=>{
+        console.error(error);
+        document.getElementById('engine-state').textContent='CONNECTION INTERRUPTED';
+        document.getElementById('startup-message').textContent='The universe could not finish loading. Please reload to try again.';
+      });
+    </script>
   </body>
 </html>
